@@ -4,8 +4,8 @@ from rest_framework.views import APIView
 
 from .models import User
 
-from .permissions import IsAdminRole
 from .serializer import LoginSerializer, RegisterSerializer, UserSerializer
+from core.permissions import IsAdminRole
 from core.utils.responses import success_response
 
 from drf_spectacular.utils import extend_schema
