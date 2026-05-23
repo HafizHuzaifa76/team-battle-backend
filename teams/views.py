@@ -11,6 +11,9 @@ from teams.serializers import TeamSerializer
 from teams.services import create_team, get_all_teams
 
 # Create your views here.
+@extend_schema(
+    request=TeamSerializer
+)
 class TeamListView(APIView):
 
     permission_classes = [IsAdminRole]
