@@ -1,5 +1,7 @@
 from rest_framework.permissions import BasePermission
 
+from accounts.models import Role
+
 
 class IsAdminRole(BasePermission):
 
@@ -7,5 +9,5 @@ class IsAdminRole(BasePermission):
 
         return (
             request.user.is_authenticated and
-            request.user.role == "ADMIN"
+            request.user.role == Role.ADMIN
         )

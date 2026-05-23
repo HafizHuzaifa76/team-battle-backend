@@ -6,7 +6,13 @@ from .permissions import IsAdminRole
 from .serializer import LoginSerializer, RegisterSerializer
 from core.utils.responses import success_response
 
+from drf_spectacular.utils import extend_schema
+
 # Create your views here.
+
+@extend_schema(
+    request=RegisterSerializer
+)
 class RegisterUserView(APIView):
 
     permission_classes = [IsAdminRole]
@@ -31,6 +37,9 @@ class RegisterUserView(APIView):
             status_code=HTTP_201_CREATED
         )
 
+@extend_schema(
+    request=LoginSerializer
+)
 class LoginUserView(APIView):
     def post(self, request):
 

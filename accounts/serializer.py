@@ -1,33 +1,34 @@
-from dataclasses import field
-from django.forms import CharField
+
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from .models import Role, User
 
-from django.db import models
 
+from rest_framework import serializers
 from .models import User
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+
     password = serializers.CharField(
         write_only=True,
         min_length=8
     )
 
     class Meta:
-        model: User
-        
+        model = User
+
         fields = [
+            'name',
             'email',
             'password',
-            'role',
-            'name'
+            'role'
         ]
 
     def create(self, validated_data):
-        return User.objects.create_user( **validated_data)
+        return User.objects.create_user(**validated_data)
 
 class LoginSerializer(serializers.ModelSerializer):
     email = serializers.EmailField()
@@ -40,7 +41,7 @@ class LoginSerializer(serializers.ModelSerializer):
         password = attrs.get("password")
         
         user = authenticate(
-            email=email,
+            username=email,
             password=password
         )
 
@@ -68,7 +69,7 @@ class LoginSerializer(serializers.ModelSerializer):
         }
 
     class Meta:
-        model: User
+        model = User
         fields = [
             'email',
             'password'
