@@ -1,14 +1,13 @@
 
+from dataclasses import field
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Role, User
+from .models import  User
 
 
 from rest_framework import serializers
-from .models import User
-
 
 class RegisterSerializer(serializers.ModelSerializer):
 
@@ -73,4 +72,14 @@ class LoginSerializer(serializers.ModelSerializer):
         fields = [
             'email',
             'password'
+        ]
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'name',
+            'email',
+            'role'            
         ]
