@@ -9,3 +9,4 @@ class TeamSerializer(serializers.ModelSerializer):
             'name',
             'rank'
         ]
+        read_only_fields = ['rank']

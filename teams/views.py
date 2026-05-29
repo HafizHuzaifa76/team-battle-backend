@@ -32,10 +32,10 @@ class TeamListView(APIView):
 
     def post(self, request):
 
-        serializer = TeamSerializer(request.data)
+        serializer = TeamSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        team = create_team(serializer.validated_data)
+        team = create_team(validated_data=serializer.validated_data)
 
         response_seriaizer = TeamSerializer(team)
 
