@@ -8,7 +8,7 @@ from .serializer import LoginSerializer, RegisterSerializer, UserSerializer
 from core.permissions import IsAdminRole
 from core.utils.responses import success_response
 
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiExample, extend_schema
 
 # Create your views here.
 
@@ -59,7 +59,17 @@ class RegisterUserView(APIView):
         )
 
 @extend_schema(
-    request=LoginSerializer
+    request=LoginSerializer,
+    examples=[
+        OpenApiExample(
+            name="Login Request Example",
+            value={
+                "email": "admin@teambattle.com",
+                "password": "admin@"
+            },
+            request_only=True
+        )
+    ]
 )
 class LoginUserView(APIView):
     serializer_class = LoginSerializer
