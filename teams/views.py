@@ -17,6 +17,7 @@ from teams.services import create_team, get_all_teams
 class TeamListView(APIView):
 
     permission_classes = [IsAdminRole]
+    serializer_class = TeamSerializer
 
     def get(self, request):
         teams = get_all_teams()

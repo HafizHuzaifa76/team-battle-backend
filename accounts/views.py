@@ -15,6 +15,7 @@ from drf_spectacular.utils import extend_schema
 
 class UsersView(APIView):
 
+    serializer_class = UserSerializer
     permission_classes = [IsAdminRole]
     
     def get(self, request):
@@ -34,6 +35,7 @@ class UsersView(APIView):
 )
 class RegisterUserView(APIView):
 
+    serializer_class = RegisterSerializer
     permission_classes = [IsAdminRole]
 
     def post(self, request):
@@ -60,6 +62,8 @@ class RegisterUserView(APIView):
     request=LoginSerializer
 )
 class LoginUserView(APIView):
+    serializer_class = LoginSerializer
+
     def post(self, request):
 
         serializer = LoginSerializer(
