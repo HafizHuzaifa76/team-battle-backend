@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.views.generic import edit
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED
 from rest_framework.views import APIView
 from core.permissions import IsAdminRole
@@ -8,7 +9,7 @@ from drf_spectacular.utils import extend_schema
 
 from teams.models import Team
 from teams.serializers import TeamSerializer
-from teams.services import create_team, get_all_teams
+from teams.services import create_team, delete_team, edit_team, get_all_teams
 
 # Create your views here.
 @extend_schema(
@@ -26,8 +27,7 @@ class TeamListView(APIView):
 
         return success_response(
             message='Teams Fetched Successfully',
-            data=serializer.data,
-            status_code=HTTP_200_OK
+            data=serializer.data
         )
 
     def post(self, request):
@@ -43,4 +43,31 @@ class TeamListView(APIView):
             message='Team Created Successfully',
             data=response_seriaizer.data,
             status_code=HTTP_201_CREATED
+        )
+
+
+class TeamDetailView(APIView):
+
+    serializer_class = TeamSerializer
+    permission_classes = [IsAdminRole]
+
+    def patch(self, request, id):
+        
+        serializer = TeamSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        team = edit_team(team_id=id, validated_data=serializer.validated_data)
+
+        response_serializer = TeamSerializer(team)
+
+        return success_response(
+            message = 'Team Edit Successfully',
+            data = response_serializer.data
+        )
+    
+    def delete(self, request, id):
+        delete_team(team_id = id)
+
+        return success_response(
+            message = 'Team Deleted Successfully' 
         )
