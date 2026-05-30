@@ -6,14 +6,14 @@ from accounts import serializer
 from core.permissions import IsAdminRole
 from player.serializers import PlayerSerializer
 from player.services import create_player, delete_player, edit_player, get_all_players
-from core.utils.responses import success_response
+from core.utils.responses import error_response, success_response
 
 from drf_spectacular.utils import extend_schema
 
 # Create your views here.
 class PlayersListView(APIView):
 
-    permission_classes = [IsAdminRole]
+    # permission_classes = [IsAdminRole]
     serializer_class = PlayerSerializer
 
     def get(self, request):
@@ -27,17 +27,22 @@ class PlayersListView(APIView):
         )
     
     def post(self, request):
-        serializer = PlayerSerializer(data=request.data)
-        serializer.is_valid(raise_exception = True)
+        try:
+            serializer = PlayerSerializer(data=request.data)
+            serializer.is_valid(raise_exception = True)
 
-        player = create_player(validated_data = serializer.validated_data)
-        response_serializer = PlayerSerializer(player)
+            player = create_player(validated_data = serializer.validated_data)
+            response_serializer = PlayerSerializer(player)
 
-        return success_response(
-            message = 'Player Created Successfully', 
-            data = response_serializer.data,
-            status_code = HTTP_201_CREATED
-        )
+            return success_response(
+                message = 'Player Created Successfully', 
+                data = response_serializer.data,
+                status_code = HTTP_201_CREATED
+            )
+        except Exception as e:
+            return error_response(
+                message = str(e)
+            )
 
 class PlayerrDetailView(APIView):
 
