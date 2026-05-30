@@ -46,7 +46,7 @@ class PlayerrDetailView(APIView):
     serializer_class = PlayerSerializer
 
     def patch(self, request, id):
-        serializer = PlayerSerializer(data = request.data)
+        serializer = PlayerSerializer(data = request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         
         player = edit_player(player_id=id, validated_data=serializer.validated_data)
