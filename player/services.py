@@ -14,10 +14,10 @@ def create_player(validated_data):
     if Player.objects.filter(email = email).exists():
         raise Exception('Player with this email already exist')
 
-    # user = User.objects.create_user(
-    #     email = email,
-    #     password = 'player123'
-    # )
+    user = User.objects.create_user(
+        email = email,
+        password = 'player123'
+    )
 
     player = Player.objects.create(
         **validated_data

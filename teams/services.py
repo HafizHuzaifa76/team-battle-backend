@@ -22,10 +22,10 @@ def create_team(validated_data):
         rank=next_rank
     )
 
-    User.objects.create_user(
-        email = identifier,
-        password = 'player123'
-    )
+    # User.objects.create_user(
+    #     email = identifier,
+    #     password = 'player123'
+    # )
 
     return team
 
