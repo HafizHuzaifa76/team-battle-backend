@@ -1,5 +1,6 @@
 from django.forms import ValidationError
 from rest_framework import serializers
+from player.basic_serializers import PlayerBasicSerializer
 from player.models import Player
 from teams.models import Team
 
@@ -8,6 +9,8 @@ class TeamSerializer(serializers.ModelSerializer):
         child=serializers.IntegerField(),
         write_only=True
     )
+
+    players = PlayerBasicSerializer(many=True, read_only=True)
 
     def validate_player_ids(self, value):
         print(f'validating player ids: {len(value)}')
@@ -40,6 +43,7 @@ class TeamSerializer(serializers.ModelSerializer):
             'identifier',
             'rank',
             'player_ids',
+            'players',
         ]
 
         read_only_fields = ['rank', 'identifier']
