@@ -2,6 +2,7 @@ from email.policy import default
 from django.db import models
 
 from accounts.models import Role
+from teams.models import Team
 
 # Create your models here.
 class Player(models.Model):
@@ -12,4 +13,11 @@ class Player(models.Model):
         max_length=50,
         choices=Role.choices,
         default=Role.PLAYER
+    )
+    team = models.ForeignKey(
+        Team,
+        null=True,
+        blank=True,
+        related_name="players",
+        on_delete=models.SET_NULL,
     )
