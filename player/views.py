@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED
 from rest_framework.views import APIView
 
@@ -13,8 +14,12 @@ from drf_spectacular.utils import extend_schema
 # Create your views here.
 class PlayersListView(APIView):
 
-    # permission_classes = [IsAdminRole]
     serializer_class = PlayerSerializer
+    
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [IsAdminRole()]
+        return [IsAuthenticated()]
 
     def get(self, request):
         players = get_all_players()
@@ -46,8 +51,12 @@ class PlayersListView(APIView):
 
 class PlayerrDetailView(APIView):
 
-    permission_classes = [IsAdminRole]
     serializer_class = PlayerSerializer
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [IsAuthenticated()]
+        return [IsAdminRole()]
 
     def get(self, request, id):
         player = get_player_by_id(id)

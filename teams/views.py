@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import edit
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED
 from rest_framework.views import APIView
 from core.permissions import IsAdminRole
@@ -17,8 +18,12 @@ from teams.services import create_team, delete_team, edit_team, get_all_teams, g
 )
 class TeamListView(APIView):
 
-    permission_classes = [IsAdminRole]
     serializer_class = TeamSerializer
+
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [IsAdminRole()]
+        return [IsAuthenticated()]
 
     def get(self, request):
         teams = get_all_teams()
@@ -49,7 +54,10 @@ class TeamListView(APIView):
 class TeamDetailView(APIView):
 
     serializer_class = TeamSerializer
-    permission_classes = [IsAdminRole]
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [IsAuthenticated()]
+        return [IsAdminRole()]
 
     def get(self, request, id):
         team = get_team_by_id(team_id=id,)
