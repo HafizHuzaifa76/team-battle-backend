@@ -1,9 +1,11 @@
 
 from dataclasses import field
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from player.models import Player
+from player.serializers import PlayerSerializer
 from .models import  User
 
 
@@ -48,17 +50,24 @@ class LoginSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "Invalid credentials"
             )
+
+        try:
+            player = Player.objects.get(email=email)
+            player_data = PlayerSerializer(player).data
+        except Player.DoesNotExist:
+            player_data = None
         
         refresh = RefreshToken.for_user(user)
 
         return {
 
             "user": {
-
-                "id": user.id,
+                "name": user.name,
                 "email": user.email,
                 "role": user.role,
             },
+
+            'player': player_data,
 
             "tokens": {
 
