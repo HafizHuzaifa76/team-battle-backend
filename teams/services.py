@@ -1,6 +1,8 @@
 
 
+from django.forms import ValidationError
 from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import NotFound
 from rest_framework.generics import _get_object_or_404
 from accounts.models import User
 from player.models import Player
@@ -64,3 +66,9 @@ def get_all_teams():
     teams = Team.objects.all()
 
     return teams
+
+def get_team_by_id(team_id):
+    try:
+        return Team.objects.get(id=team_id)
+    except Team.DoesNotExist:
+        raise NotFound("Team Not Found")

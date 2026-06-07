@@ -1,12 +1,19 @@
 
 
 from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import NotFound
 from accounts.models import User
 from player.models import Player
 
 
 def get_all_players():
     return Player.objects.all()
+    
+def get_player_by_id(player_id):
+    try:
+        return Player.objects.get(id = player_id)
+    except Player.DoesNotExist:
+        raise NotFound('Player Not Found')
 
 def create_player(validated_data):
     email = validated_data.get("email")

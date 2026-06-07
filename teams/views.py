@@ -3,13 +3,13 @@ from django.views.generic import edit
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED
 from rest_framework.views import APIView
 from core.permissions import IsAdminRole
-from core.utils.responses import success_response
+from core.utils.responses import error_response, success_response
 
 from drf_spectacular.utils import extend_schema
 
 from teams.models import Team
 from teams.serializers import TeamSerializer
-from teams.services import create_team, delete_team, edit_team, get_all_teams
+from teams.services import create_team, delete_team, edit_team, get_all_teams, get_team_by_id
 
 # Create your views here.
 @extend_schema(
@@ -51,6 +51,16 @@ class TeamDetailView(APIView):
     serializer_class = TeamSerializer
     permission_classes = [IsAdminRole]
 
+    def get(self, request, id):
+        team = get_team_by_id(team_id=id,)
+
+        response_serializer = TeamSerializer(team)
+
+        return success_response(
+            message = 'Team Fetch Successfully',
+            data = response_serializer.data
+        )
+            
     def patch(self, request, id):
         
         serializer = TeamSerializer(data=request.data)

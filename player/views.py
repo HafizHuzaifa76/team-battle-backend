@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from accounts import serializer
 from core.permissions import IsAdminRole
 from player.serializers import PlayerSerializer
-from player.services import create_player, delete_player, edit_player, get_all_players
+from player.services import create_player, delete_player, edit_player, get_all_players, get_player_by_id
 from core.utils.responses import error_response, success_response
 
 from drf_spectacular.utils import extend_schema
@@ -48,6 +48,15 @@ class PlayerrDetailView(APIView):
 
     permission_classes = [IsAdminRole]
     serializer_class = PlayerSerializer
+
+    def get(self, request, id):
+        player = get_player_by_id(id)
+        serializer = PlayerSerializer(player)
+
+        return success_response(
+            message = 'Player Fetched Successfully',
+            data = serializer.data
+        )
 
     def patch(self, request, id):
         serializer = PlayerSerializer(data = request.data, partial=True)

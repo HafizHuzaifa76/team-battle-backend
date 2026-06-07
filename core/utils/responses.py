@@ -36,7 +36,6 @@ def error_response(
 
         "success": False,
         "message": message,
-        "data": None,
         "errors": errors
     }
 
