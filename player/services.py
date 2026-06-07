@@ -17,11 +17,13 @@ def get_player_by_id(player_id):
 
 def create_player(validated_data):
     email = validated_data.get("email")
+    name = validated_data.get("name")
     
     if Player.objects.filter(email = email).exists():
         raise Exception('Player with this email already exist')
 
     user = User.objects.create_user(
+        name = name,
         email = email,
         password = 'player123'
     )
