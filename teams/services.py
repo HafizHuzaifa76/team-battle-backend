@@ -1,12 +1,13 @@
 
 
+from unicodedata import category
 from django.forms import ValidationError
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import _get_object_or_404
 from accounts.models import User
 from player.models import Player
-from teams.models import Team
+from teams.models import Category, Team
 
 
 def create_team(validated_data):
@@ -15,6 +16,21 @@ def create_team(validated_data):
     next_rank = 1
     if last_team:
         next_rank = last_team.rank + 1
+
+    match next_rank:
+        case rank if rank < 5:
+            category = Category.PLATINUM
+
+        case rank if rank < 22:
+            category = Category.GOLD
+
+        case rank if rank < 33:
+            category = Category.SILVER
+
+        case _:
+            category = Category.BRONZE
+
+
     
     name = validated_data.get('name')
     player_ids = validated_data.get('player_ids')
@@ -23,10 +39,12 @@ def create_team(validated_data):
     team = Team.objects.create(
         name=name,
         identifier=identifier,
+        category=category,
         rank=next_rank
     )
 
     Player.objects.filter(id__in = player_ids, team__isnull=True).update(team=team)
+
 
     # User.objects.create_user(
     #     email = identifier,
