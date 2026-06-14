@@ -5,8 +5,7 @@ from django.forms import ValidationError
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import _get_object_or_404
-from accounts.models import User
-from player.models import Player
+from accounts.models import Role, User
 from teams.models import Category, Team
 
 
@@ -43,7 +42,7 @@ def create_team(validated_data):
         rank=next_rank
     )
 
-    Player.objects.filter(id__in = player_ids, team__isnull=True).update(team=team)
+    User.objects.filter(id__in = player_ids, role = Role.PLAYER, team__isnull=True).update(team=team)
 
 
     # User.objects.create_user(
@@ -65,12 +64,14 @@ def edit_team(team_id, validated_data):
     
     team.save()
 
-    Player.objects.filter(team=team).exclude(
-        id__in=new_player_ids
+    User.objects.filter(team=team).exclude(
+        id__in=new_player_ids,
+        role = Role.PLAYER,
     ).update(team=None)
 
-    Player.objects.filter(
+    User.objects.filter(
         id__in=new_player_ids,
+        role = Role.PLAYER,
         team__isnull=True
     ).update(team=team)
 

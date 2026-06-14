@@ -4,9 +4,9 @@ from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED
 from rest_framework.views import APIView
 
 from accounts import serializer
+from accounts.serializer import PlayerSerializer
 from core.permissions import IsAdminRole
-from player.serializers import PlayerSerializer
-from player.services import create_player, delete_player, edit_player, get_all_players, get_player_by_id
+from accounts.player_service import create_player, delete_player, edit_player, get_all_players, get_player_by_id  
 from core.utils.responses import error_response, success_response
 
 from drf_spectacular.utils import extend_schema

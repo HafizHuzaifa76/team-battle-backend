@@ -1,8 +1,6 @@
 from django.urls import path
 
-from .views import PlayerrDetailView, PlayersListView
-
-
+from accounts.player_views import PlayerrDetailView, PlayersListView
 
 urlpatterns = [
     path('', PlayersListView.as_view(), name='players'),

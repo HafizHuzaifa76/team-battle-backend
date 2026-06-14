@@ -1,8 +1,9 @@
 from rest_framework import serializers
 
-from player.models import Player
+from accounts.models import User
+
 
 class PlayerBasicSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Player
-        fields = ['id','name', 'age', 'email']
+        model = User
+        fields = ['id','name', 'email', 'role']

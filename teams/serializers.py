@@ -1,7 +1,7 @@
 from django.forms import ValidationError
 from rest_framework import serializers
-from player.basic_serializers import PlayerBasicSerializer
-from player.models import Player
+from accounts.basic_serializers import PlayerBasicSerializer
+from accounts.models import Role, User
 from teams.models import Team
 
 class TeamSerializer(serializers.ModelSerializer):
@@ -22,7 +22,7 @@ class TeamSerializer(serializers.ModelSerializer):
         
         team = self.instance
 
-        qs = Player.objects.filter(id__in = value, team__isnull = False)
+        qs = User.objects.filter(id__in = value, role = Role.PLAYER, team__isnull = False)
 
         if team:
             qs = qs.exclude(team = team)

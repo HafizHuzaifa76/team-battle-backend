@@ -1,6 +1,9 @@
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.db import models
 
+from teams.basic_serializers import TeamBasicSerializer
+from teams.models import Team
+
 # Create your models here.
 class UserManager(BaseUserManager):
     def create_user(self, email, password, **extra_fields):
@@ -29,13 +32,25 @@ class Role(models.TextChoices):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    name = models.CharField(max_length=40)
+    name = models.CharField(max_length = 100, default = 'New Player')
     email = models.EmailField(unique=True)
 
     role = models.CharField(
         max_length=20,
         choices=Role.choices,
         default=Role.PLAYER
+    )
+    
+    # age = models.IntegerField(
+    #     null=True,
+    #     blank=True
+    # )
+
+    team = models.ForeignKey(
+        Team,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL
     )
 
     is_active = models.BooleanField(default=True)
@@ -48,3 +63,15 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+    
+    def to_json(self):
+        team = TeamBasicSerializer(self.team) if self.team else None
+        data = {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            "role": self.role,
+            "team": team,
+        }
+        
+        return data

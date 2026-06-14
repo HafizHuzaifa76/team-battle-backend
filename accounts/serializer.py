@@ -4,9 +4,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from player.models import Player
-from player.serializers import PlayerSerializer
-from .models import  User
+from teams.basic_serializers import TeamBasicSerializer
+from .models import  Role, User
 
 
 from rest_framework import serializers
@@ -25,7 +24,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             'name',
             'email',
             'password',
-            'role'
+            'role',
         ]
 
     def create(self, validated_data):
@@ -51,23 +50,23 @@ class LoginSerializer(serializers.ModelSerializer):
                 "Invalid credentials"
             )
 
-        try:
-            player = Player.objects.get(email=email)
-            player_data = PlayerSerializer(player).data
-        except Player.DoesNotExist:
-            player_data = None
+        # player_data = user.player
+
         
         refresh = RefreshToken.for_user(user)
 
         return {
 
-            "user": {
-                "name": user.name,
-                "email": user.email,
-                "role": user.role,
-            },
+            "user": user.to_json(),
+            # "user": {
+            #     "id": user.id,
+            #     "name": user.name,
+            #     "email": user.email,
+            #     "role": user.role,
+            #     if(user.role = Role.ADMIN) "team": user.team,
+            # },
 
-            'player': player_data,
+            # 'player': player_data,
 
             "tokens": {
 
@@ -92,3 +91,9 @@ class UserSerializer(serializers.ModelSerializer):
             'email',
             'role'            
         ]
+
+class PlayerSerializer(serializers.ModelSerializer):
+    team = TeamBasicSerializer(read_only = True)
+    class Meta:
+        model = User
+        fields = ['id','name', 'email', 'role', 'team']
