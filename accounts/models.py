@@ -71,7 +71,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             "name": self.name,
             "email": self.email,
             "role": self.role,
-            "team": team,
+            "team": team.data if self.team else None,
         }
         
         return data
