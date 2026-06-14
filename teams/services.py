@@ -1,9 +1,11 @@
 
 
+from typing import Any
+
+
 from unicodedata import category
-from django.forms import ValidationError
 from django.shortcuts import get_object_or_404
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.generics import _get_object_or_404
 from accounts.models import Role, User
 from teams.models import Category, Team
@@ -35,6 +37,15 @@ def create_team(validated_data):
     player_ids = validated_data.get('player_ids')
     identifier = '_'.join(str(name).strip().lower().split())
 
+
+    players = User.objects.filter(id__in = player_ids, role = Role.PLAYER, team__isnull=True)
+
+    found_ids = set(players.values_list('id', flat=True))
+    missing_ids = set(player_ids) - found_ids
+
+    if missing_ids:
+        raise ValidationError(f"Invalid Players IDs: {missing_ids}")
+
     team = Team.objects.create(
         name=name,
         identifier=identifier,
@@ -42,15 +53,7 @@ def create_team(validated_data):
         rank=next_rank
     )
 
-    User.objects.filter(id__in = player_ids, role = Role.PLAYER, team__isnull=True).update(team=team)
-
-
-    # User.objects.create_user(
-    #     email = identifier,
-    #     password = 'player123'
-    # )
-
-    
+    players.update(team=team)
 
     return team
 
@@ -58,6 +61,15 @@ def edit_team(team_id, validated_data):
     team = get_object_or_404(Team, id=team_id)
     
     new_player_ids = validated_data.get('player_ids')
+
+    players = User.objects.filter(id__in = new_player_ids, role = Role.PLAYER, team__isnull=True)
+
+    found_ids = set(players.values_list('id', flat=True))
+    missing_ids = set(new_player_ids) - found_ids
+    print("Invalid Players IDs: {missing_ids}")
+
+    if missing_ids:
+        raise ValidationError(f"Invalid Players IDs: {missing_ids}")
 
     for key, value in validated_data.items():
         setattr(team, key, value)
@@ -69,11 +81,7 @@ def edit_team(team_id, validated_data):
         role = Role.PLAYER,
     ).update(team=None)
 
-    User.objects.filter(
-        id__in=new_player_ids,
-        role = Role.PLAYER,
-        team__isnull=True
-    ).update(team=team)
+    players.update(team=team)
 
     return team
 
