@@ -15,7 +15,7 @@ class ChallengeListView(APIView):
     def get(self, request):
         
         challenge = get_challenges()
-        seializer = ChallengeSerializer(challenge)
+        seializer = ChallengeSerializer(challenge, many=True)
 
         return success_response(
             message='Challenges get successfully',
@@ -27,10 +27,12 @@ class ChallengeListView(APIView):
         
         seriaizer = ChallengeSerializer(data=request.data)
         seriaizer.is_valid(raise_exception=True)
+
         challenge = create_challenge(seriaizer.validated_data)
         response_seializer = ChallengeSerializer(challenge)
+        
         return success_response(
-            message='Challenges get successfully',
+            message='Challenge created successfully',
             data=response_seializer.data,
             status_code=HTTP_201_CREATED
         )
