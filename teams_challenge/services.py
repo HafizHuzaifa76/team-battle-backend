@@ -41,3 +41,9 @@ def create_challenge(validated_data):
 
 def get_challenges():
     return Challenge.objects.all()
+
+def get_challenge_by_id(challenge_id):
+    try:
+        return Challenge.objects.get(id=challenge_id)
+    except Challenge.DoesNotExist:
+        raise NotFound('Challenge Not Exist')
