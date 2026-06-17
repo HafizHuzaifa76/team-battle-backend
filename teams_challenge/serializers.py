@@ -18,6 +18,7 @@ class ChallengeSerializer(serializers.ModelSerializer):
             'challenger',
             'challenged',
             'winner',
+            'status',
             'challenger_points',
             'challenged_points',
             'updated_at',

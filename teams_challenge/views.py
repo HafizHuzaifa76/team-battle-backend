@@ -18,7 +18,7 @@ class ChallengeListView(APIView):
         seializer = ChallengeSerializer(challenge, many=True)
 
         return success_response(
-            message='Challenges get successfully',
+            message='Challenges fetched successfully',
             data=seializer.data,
         )
 
@@ -46,6 +46,6 @@ class ChallengeDetaiView(APIView):
         serializer = ChallengeSerializer(challenge)
 
         return success_response(
-            message='Challenge ge successfully',
+            message='Challenge fetch successfully',
             data=serializer.data
         )

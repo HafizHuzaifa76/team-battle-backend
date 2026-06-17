@@ -7,6 +7,13 @@ class Winner(models.TextChoices):
     CHALLENGED_TEAM = 'CHALLENGED_TEAM', 'Challenged_Team'
     DRAW = 'DRAW', 'Draw'
 
+class ChallengeStatus(models.TextChoices):
+    UPCOMING = 'UPCOMING', 'Upcoming'
+    TODAY = 'TODAY', 'Today'
+    PENDING_RESULT = 'PENDING_RESULT', 'Pending_Result'
+    COMPLETED = 'COMPLETED', 'Completed'
+    CANCELLED = 'CANCELLED', 'Cancelled'
+
 
 # Create your models here.
 class Challenge(models.Model):
@@ -29,6 +36,12 @@ class Challenge(models.Model):
         choices=Winner.choices,
         null=True,
         blank=True,
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=ChallengeStatus.choices,
+        default=ChallengeStatus.UPCOMING,
     )
 
     challenger_points = models.PositiveIntegerField(null=True, blank=True)

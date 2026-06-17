@@ -1,8 +1,9 @@
 
 
+from datetime import date
 from django.shortcuts import get_object_or_404
 from teams.models import Team
-from teams_challenge.models import Challenge
+from teams_challenge.models import Challenge, ChallengeStatus
 from rest_framework.exceptions import NotFound, ValidationError
 
 def create_challenge(validated_data):
@@ -33,10 +34,15 @@ def create_challenge(validated_data):
     if challenges2 :
         raise ValidationError('Challenged team already have Challenge on this date')
 
-    validated_data['challenger'] = challenger
-    validated_data['challenged'] = challenged
+    today = date.today()
+    if challenge_date == today:
+        challenge_status = ChallengeStatus.TODAY
+    elif challenge_date < today:
+        challenge_status = ChallengeStatus.PENDING_RESULT
+    else:
+        challenge_status = ChallengeStatus.UPCOMING
 
-    challenge = Challenge.objects.create(**validated_data)
+    challenge = Challenge.objects.create(challenger=challenger, challenged=challenged, status=challenge_status, **validated_data)
     return challenge
 
 def get_challenges():

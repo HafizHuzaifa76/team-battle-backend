@@ -1,7 +1,4 @@
-
-
 from django.urls import path
-
 from teams_challenge.views import ChallengeDetaiView, ChallengeListView
 
 
