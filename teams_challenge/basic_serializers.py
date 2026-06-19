@@ -4,8 +4,6 @@ from teams.models import Team
 from teams_challenge.models import Challenge
 
 class ChallengeBaseSerializer(serializers.ModelSerializer):
-    challenger_id = serializers.IntegerField(write_only=True)
-    challenged_id = serializers.IntegerField(write_only=True)
     challenger = TeamBasicSerializer(read_only=True)
     challenged = TeamBasicSerializer(read_only=True)
 
