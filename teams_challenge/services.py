@@ -3,7 +3,9 @@
 from datetime import date
 from django.shortcuts import get_object_or_404
 from teams.models import Team
-from teams_challenge.models import Challenge, ChallengeStatus
+from django.db import transaction
+from django.db.models import F
+from teams_challenge.models import Challenge, ChallengeStatus, Winner
 from rest_framework.exceptions import NotFound, ValidationError
 
 def create_challenge(validated_data):
@@ -48,8 +50,64 @@ def create_challenge(validated_data):
 def get_challenges():
     return Challenge.objects.all()
 
+
 def get_challenge_by_id(challenge_id):
     try:
-        return Challenge.objects.get(id=challenge_id)
+        return Challenge.objects.select_related("challenger", "challenged").get(id=challenge_id)
     except Challenge.DoesNotExist:
-        raise NotFound('Challenge Not Exist')
+        raise NotFound("Challenge does not exist")
+
+
+
+@transaction.atomic
+def update_challenge_result(validated_data, challenge_id):
+    challenge = get_challenge_by_id(challenge_id)
+
+    if challenge.status != ChallengeStatus.PENDING_RESULT:
+        raise ValidationError(
+            "Only challenges with PENDING_RESULT can be updated"
+        )
+
+    challenger_points = validated_data.get("challenger_points")
+    challenged_points = validated_data.get("challenged_points")
+
+    if challenger_points is None or challenged_points is None:
+        raise ValidationError("Both team scores are required")
+
+    # Determine winner
+    if challenger_points > challenged_points:
+        winner = Winner.CHALLENGER_TEAM
+    elif challenger_points < challenged_points:
+        winner = Winner.CHALLENGED_TEAM
+    else:
+        winner = Winner.DRAW
+
+    challenge.challenger_points = challenger_points
+    challenge.challenged_points = challenged_points
+    challenge.winner = winner
+
+    challenger_team = challenge.challenger
+    challenged_team = challenge.challenged
+
+    challenger_rank = challenger_team.rank
+    challenged_rank = challenged_team.rank
+
+    if winner == Winner.CHALLENGER_TEAM:
+
+        # Move all teams between challenged_rank and challenger_rank down by 1
+        Team.objects.filter(
+            rank__gte=challenged_rank,
+            rank__lt=challenger_rank
+        ).update(rank=F("rank") + 1)
+
+        # Challenger takes challenged team's rank
+        challenger_team.rank = challenged_rank
+        challenger_team.save(update_fields=["rank"])
+
+    challenge.status = ChallengeStatus.COMPLETED
+    challenge.save()
+
+    challenge.challenger.refresh_from_db()
+    challenge.challenged.refresh_from_db()
+    
+    return challenge
