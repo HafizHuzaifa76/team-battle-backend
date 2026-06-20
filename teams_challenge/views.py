@@ -8,7 +8,7 @@ from core.permissions import IsAdminRole
 from core.utils.responses import success_response
 from teams_challenge.basic_serializers import ChallengeBaseSerializer
 from teams_challenge.serializers import ChallengeCreateSerializer, ChallengeResultSerializer
-from teams_challenge.services import create_challenge, get_challenge_by_id, get_challenges, update_challenge_result
+from teams_challenge.services import create_challenge, delete_challenge, get_challenge_by_id, get_challenges, update_challenge_result
 
 # Create your views here.
 class ChallengeListView(APIView):
@@ -54,6 +54,13 @@ class ChallengeDetaiView(APIView):
             data=serializer.data
         )
 
+    def delete(self, request, challenge_id):
+        current_user = request.user
+        print(request)
+        delete_challenge(current_user, challenge_id)
+        return success_response(
+            message='Challenge Deleted successfully',
+        )
 
     def patch(self, request, challenge_id):
         seriaizer = ChallengeCreateSerializer(data=request.data, partial=True)

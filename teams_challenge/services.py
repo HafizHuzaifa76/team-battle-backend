@@ -27,6 +27,12 @@ def create_challenge(validated_data):
         raise ValidationError(
             'Team cannot challenge itself'
         )
+
+    if challenger.rank < challenged.rank or challenger.rank - challenged.rank > 3:
+        raise ValidationError(
+            f"This challenger can only challenge teams with ranks "
+            f"{max(1, challenger.rank - 3)} to {challenger.rank - 1}"
+        )
         
     challenges1 = Challenge.objects.filter(challenger=challenger, challenge_date=challenge_date).exists()
     if challenges1:
@@ -50,6 +56,17 @@ def create_challenge(validated_data):
 def get_challenges():
     return Challenge.objects.all()
 
+def delete_challenge(user, challenge_id):
+    challenge = get_challenge_by_id(challenge_id)
+
+    if user.team == None or user.team.id != challenge.challenger.id:
+        raise ValidationError(
+            "Only challenger can delete his own challenge"
+        )
+
+    challenge.delete()
+
+    # if user.team.id == challenge.challenger.team.id
 
 def get_challenge_by_id(challenge_id):
     try:
@@ -109,5 +126,5 @@ def update_challenge_result(validated_data, challenge_id):
 
     challenge.challenger.refresh_from_db()
     challenge.challenged.refresh_from_db()
-    
+
     return challenge
