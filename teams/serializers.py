@@ -47,4 +47,4 @@ class TeamSerializer(serializers.ModelSerializer):
             'players',
         ]
 
-        read_only_fields = ['rank', 'category', 'identifier']
+        read_only_fields = ['rank', 'category', 'identifier', 'players']

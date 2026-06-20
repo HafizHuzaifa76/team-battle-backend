@@ -50,6 +50,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         Team,
         null=True,
         blank=True,
+        related_name="players",
         on_delete=models.SET_NULL
     )
 
