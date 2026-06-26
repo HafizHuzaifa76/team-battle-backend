@@ -99,3 +99,9 @@ def get_team_by_id(team_id):
         return Team.objects.get(id=team_id)
     except Team.DoesNotExist:
         raise NotFound("Team Not Found")
+
+def get_my_team(team_id):
+    try:
+        return Team.objects.get(id=team_id)
+    except Team.DoesNotExist:
+        raise NotFound("Team Not Found")

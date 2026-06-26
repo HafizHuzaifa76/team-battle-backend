@@ -1,16 +1,17 @@
 from django.shortcuts import render
 from django.views.generic import edit
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED
 from rest_framework.views import APIView
-from core.permissions import IsAdminRole
-from core.utils.responses import error_response, success_response
+from core.permissions import IsAdminRole, IsPlayerRole
+from core.utils.responses import success_response
 
 from drf_spectacular.utils import extend_schema
 
 from teams.models import Team
 from teams.serializers import TeamSerializer
-from teams.services import create_team, delete_team, edit_team, get_all_teams, get_team_by_id
+from teams.services import create_team, delete_team, edit_team, get_all_teams, get_my_team, get_team_by_id
 
 # Create your views here.
 @extend_schema(
@@ -88,4 +89,26 @@ class TeamDetailView(APIView):
 
         return success_response(
             message = 'Team Deleted Successfully' 
+        )
+
+
+class MyTeamView(APIView):
+
+    permission_classes = [IsPlayerRole]
+    serializer_class = TeamSerializer
+
+    def get(self, request):
+        # team = get_my_team()
+        team = request.user.team
+
+        if not team:
+            raise ValidationError(
+                detail = 'No Team Assigned to Player'
+            )
+        
+        serializer = TeamSerializer(team)
+
+        return success_response(
+            message = 'Team Fetched Successfully',
+            data=serializer.data,
         )
