@@ -90,7 +90,7 @@ def delete_team(team_id):
     team.delete()
 
 def get_all_teams():
-    teams = Team.objects.all()
+    teams = Team.objects.all().order_by("rank")
 
     return teams
 
