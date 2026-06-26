@@ -24,14 +24,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-$81tk+#5(lv3$l5i1n@roghz_53y5ipn8ev5wb1h(o6)cy(-sv'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = [
-    "onward-pregnant-semicolon.ngrok-free.dev",
-    "192.168.0.105",
-    "localhost",
-    "127.0.0.1",
-]
+ALLOWED_HOSTS = ["*"]  # Temporary only
+
+# ALLOWED_HOSTS = [
+#     "onward-pregnant-semicolon.ngrok-free.dev",
+#     "192.168.0.105",
+#     "localhost",
+#     "127.0.0.1",
+# ]
 
 AUTH_USER_MODEL = "accounts.User"
 
@@ -61,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -159,4 +162,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
