@@ -8,5 +8,6 @@ class TeamBasicSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'identifier',
+            'category',
             'rank'
         ]
