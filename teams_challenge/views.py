@@ -4,11 +4,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED
 from rest_framework.views import APIView
 
-from core.permissions import IsAdminRole
+from core.permissions import IsAdminRole, IsPlayerRole
 from core.utils.responses import success_response
 from teams_challenge.basic_serializers import ChallengeBaseSerializer
 from teams_challenge.serializers import ChallengeCreateSerializer, ChallengeResultSerializer
-from teams_challenge.services import create_challenge, delete_challenge, get_challenge_by_id, get_challenges, update_challenge_result
+from teams_challenge.services import create_challenge, delete_challenge, get_challenge_by_id, get_challenges, get_my_challenges, update_challenge_result
 
 # Create your views here.
 class ChallengeListView(APIView):
@@ -93,4 +93,20 @@ class ChallengeResultView(APIView):
             data=response_seializer.data,
             status_code=HTTP_200_OK
         )
+        
+
+class MyChallengesView(APIView):
+    permission_classes = [IsPlayerRole]
+    serializer_class = ChallengeBaseSerializer
+
+    def get(self, request):
+        user_team = request.user.team
+        challenge = get_my_challenges(user_team)
+        serializer = ChallengeBaseSerializer(challenge, many=True)
+
+        return success_response(
+            message='Challenge fetch successfully',
+            data=serializer.data
+        )
+
         

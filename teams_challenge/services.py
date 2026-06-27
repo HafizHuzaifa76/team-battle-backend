@@ -4,7 +4,7 @@ from datetime import date
 from django.shortcuts import get_object_or_404
 from teams.models import Team
 from django.db import transaction
-from django.db.models import F
+from django.db.models import F, Q
 from teams_challenge.models import Challenge, ChallengeStatus, Winner
 from rest_framework.exceptions import NotFound, ValidationError
 
@@ -55,6 +55,9 @@ def create_challenge(validated_data):
 
 def get_challenges():
     return Challenge.objects.all()
+
+def get_my_challenges(my_team):
+    return Challenge.objects.filter(Q(challenger=my_team) | Q(challenged=my_team))
 
 def delete_challenge(user, challenge_id):
     challenge = get_challenge_by_id(challenge_id)
