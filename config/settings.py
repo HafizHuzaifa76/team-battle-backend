@@ -27,6 +27,7 @@ SECRET_KEY = 'django-insecure-$81tk+#5(lv3$l5i1n@roghz_53y5ipn8ev5wb1h(o6)cy(-sv
 DEBUG = False
 
 ALLOWED_HOSTS = ["*"]  # Temporary only
+CORS_ALLOW_ALL_ORIGINS = True
 
 # ALLOWED_HOSTS = [
 #     "onward-pregnant-semicolon.ngrok-free.dev",
@@ -53,9 +54,12 @@ INSTALLED_APPS = [
     'teams_challenge',
     # 'player',
     'core',
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
