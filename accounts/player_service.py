@@ -32,12 +32,12 @@ def create_player(validated_data):
 
 def edit_player(player_id, validated_data):
     player = get_object_or_404(User, id = player_id, role = Role.PLAYER)
-    
+
     for key, value in validated_data.items():
         setattr(player, key, value)
-    
+
     player.save()
-    
+
     return player
 
 def delete_player(player_id):
