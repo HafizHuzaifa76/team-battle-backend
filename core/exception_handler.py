@@ -31,7 +31,8 @@ def custom_exception_handler(exc, context):
 
         return error_response(
             message = message,
-            errors = response.data
+            errors = response.data,
+            status_code=response.status_code
         )
 
     # Handle unexpected exceptions
