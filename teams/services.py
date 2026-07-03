@@ -4,6 +4,7 @@ from typing import Any
 
 
 from unicodedata import category
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.generics import _get_object_or_404
@@ -62,11 +63,16 @@ def edit_team(team_id, validated_data):
     
     new_player_ids = validated_data.get('player_ids')
 
-    players = User.objects.filter(id__in = new_player_ids, role = Role.PLAYER, team__isnull=True)
+    players = User.objects.filter(
+        id__in=new_player_ids,
+        role=Role.PLAYER
+    ).filter(
+        Q(team__isnull=True) | Q(team=team)
+    )
 
     found_ids = set(players.values_list('id', flat=True))
     missing_ids = set(new_player_ids) - found_ids
-    print("Invalid Players IDs: {missing_ids}")
+    print(f"Invalid Players IDs: {missing_ids}")
 
     if missing_ids:
         raise ValidationError(f"Invalid Players IDs: {missing_ids}")
@@ -75,6 +81,7 @@ def edit_team(team_id, validated_data):
         setattr(team, key, value)
     
     team.save()
+
 
     User.objects.filter(team=team).exclude(
         id__in=new_player_ids,

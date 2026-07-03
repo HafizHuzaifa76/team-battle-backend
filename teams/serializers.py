@@ -21,8 +21,12 @@ class TeamSerializer(serializers.ModelSerializer):
             )
         
         team = self.instance
+        print('team')
+        print(team)
 
         qs = User.objects.filter(id__in = value, role = Role.PLAYER, team__isnull = False)
+        print('qs')
+        print(qs)
 
         if team:
             qs = qs.exclude(team = team)

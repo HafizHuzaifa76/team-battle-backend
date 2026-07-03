@@ -71,8 +71,12 @@ class TeamDetailView(APIView):
         )
             
     def patch(self, request, id):
-        
-        serializer = TeamSerializer(data=request.data)
+        team = get_team_by_id(id)
+
+        serializer = TeamSerializer(
+            instance=team,
+            data=request.data
+        )
         serializer.is_valid(raise_exception=True)
 
         team = edit_team(team_id=id, validated_data=serializer.validated_data)
