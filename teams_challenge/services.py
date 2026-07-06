@@ -4,6 +4,7 @@ from datetime import date
 from django.shortcuts import get_object_or_404
 from teams.models import Team
 from django.db import transaction
+from django.utils import timezone
 from django.db.models import F, Q
 from teams_challenge.models import Challenge, ChallengeStatus, Winner
 from rest_framework.exceptions import NotFound, ValidationError
@@ -131,3 +132,35 @@ def update_challenge_result(validated_data, challenge_id):
     challenge.challenged.refresh_from_db()
 
     return challenge
+
+
+def update_challenge_statuses():
+    today = timezone.localdate()
+
+    # Future challenges
+    Challenge.objects.filter(
+        challenge_date__gt=today,
+        status__in=[
+            ChallengeStatus.UPCOMING,
+            ChallengeStatus.TODAY,
+            ChallengeStatus.PENDING_RESULT,
+        ]
+    ).update(status=ChallengeStatus.UPCOMING)
+
+    # Today's challenges
+    Challenge.objects.filter(
+        challenge_date=today,
+        status__in=[
+            ChallengeStatus.UPCOMING,
+            ChallengeStatus.PENDING_RESULT,
+        ]
+    ).update(status=ChallengeStatus.TODAY)
+
+    # Past challenges that don't have a result yet
+    Challenge.objects.filter(
+        challenge_date__lt=today,
+        status__in=[
+            ChallengeStatus.UPCOMING,
+            ChallengeStatus.TODAY,
+        ]
+    ).update(status=ChallengeStatus.PENDING_RESULT)
