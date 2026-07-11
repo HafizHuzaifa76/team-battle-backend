@@ -12,14 +12,13 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
-import os
-from dotenv import load_dotenv
 import dj_database_url
+
+from config.app_config import AppConfigs
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-load_dotenv(BASE_DIR / ".env")
 
 # print("DATABASE_URL =", repr(os.getenv("DATABASE_URL")))
 
@@ -27,10 +26,10 @@ load_dotenv(BASE_DIR / ".env")
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-$81tk+#5(lv3$l5i1n@roghz_53y5ipn8ev5wb1h(o6)cy(-sv'
+SECRET_KEY = AppConfigs.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = AppConfigs.DEBUG_VAR
 
 ALLOWED_HOSTS = ["*"]  # Temporary only
 CORS_ALLOW_ALL_ORIGINS = True
@@ -105,7 +104,7 @@ DATABASES = {
     #     'NAME': BASE_DIR / 'db.sqlite3',
     # }
 
-    "default": dj_database_url.parse(os.getenv("DATABASE_URL"))
+    "default": dj_database_url.parse(AppConfigs.DATABASE_URL)
 }
 
 REST_FRAMEWORK = {
