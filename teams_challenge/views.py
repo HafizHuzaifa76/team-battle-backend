@@ -1,14 +1,15 @@
 
 from django.shortcuts import render
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.status import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
 from rest_framework.views import APIView
 
+from config.app_config import AppConfigs
 from core.permissions import IsAdminRole, IsPlayerRole
-from core.utils.responses import success_response
+from core.utils.responses import error_response, success_response
 from teams_challenge.basic_serializers import ChallengeBaseSerializer
 from teams_challenge.serializers import ChallengeCreateSerializer, ChallengeResultSerializer
-from teams_challenge.services import create_challenge, delete_challenge, get_challenge_by_id, get_challenges, get_my_challenges, update_challenge_result
+from teams_challenge.services import create_challenge, delete_challenge, get_challenge_by_id, get_challenges, get_my_challenges, update_challenge_result, update_challenge_statuses
 
 # Create your views here.
 class ChallengeListView(APIView):
@@ -109,4 +110,22 @@ class MyChallengesView(APIView):
             data=serializer.data
         )
 
-        
+
+class ChallengeCronView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        token = request.headers.get("X-Cron-Token")
+
+        if token != AppConfigs.CRON_SECRET:
+            return error_response(
+                message="Unauthorized",
+                status_code=HTTP_401_UNAUTHORIZED,
+                errors='Unauthorized'
+            )
+
+        update_challenge_statuses()
+
+        return success_response(
+            message="Challenge statuses updated successfully."
+        )
